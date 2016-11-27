@@ -10,7 +10,8 @@ Game::Game(size_t window_width, size_t window_height)
     , window_height_(window_height)
     , grid_(window_width_, window_height_, window_width / 3, window_height / 3,
             color::LightGrey)
-    , player_2_turn_(0)
+    , turn_(Winner::X)
+    , winner_(Winner::none)
     , board_(8, BoardContent::empty)
 {
     glGenBuffers(1, &vbo_);
@@ -65,19 +66,23 @@ void Game::MouseButtonCallback(GLFWwindow* window, int button, int action,
             Game::GetSquareFromCursor(window_width_, window_height_, x, y);
         if (!ValidSquare(square)) return;
 
-        if (player_2_turn_) {
+        if (turn_ == Winner::O) {
             AddO(square);
         } else {
             AddX(square);
         }
 
+        CheckWinner();
         NextTurn();
     }
 }
 
 void Game::NextTurn()
 {
-    player_2_turn_ = (player_2_turn_ + 1) % 2;
+    if (turn_ == Winner::X)
+        turn_ = Winner::O;
+    else
+        turn_ = Winner::X;
 }
 
 bool Game::ValidSquare(size_t square)
@@ -142,11 +147,16 @@ void Game::GetSquareCenter(size_t square, size_t& x, size_t& y)
     y = ((square / 3) * 2 + 1) * (window_height_ / 6);
 }
 
-Game::Winner Game::CheckWinner()
+Game::Winner Game::GetWinner()
+{
+    return winner_;
+}
+
+void Game::CheckWinner()
 {
     // Can't think of an elegant way to do this.  Feels bad man.
     // When men were men you could use a goto here.
-    bool winner = false;
+    bool over = false;
     if ((board_[0] == board_[1] && board_[1] == board_[2] &&
          board_[0] != BoardContent::empty) ||
         (board_[3] == board_[4] && board_[4] == board_[5] &&
@@ -163,23 +173,21 @@ Game::Winner Game::CheckWinner()
          board_[0] != BoardContent::empty) ||
         (board_[2] == board_[4] && board_[4] == board_[6] &&
          board_[2] != BoardContent::empty)) {
-        winner = true;
+        over = true;
     }
 
-    if (winner) {
+    if (over) {
         // Whoever's turn it just was is the winning player.
-        if (player_2_turn_)
-            return Winner::player2;
-        else
-            return Winner::player1;
+        winner_ = turn_;
+        return;
     }
 
     // Check if there are still moves to make.
     for (size_t i = 0; i <= 8; ++i) {
-        if (board_[i] == BoardContent::empty) return Winner::none;
+        if (board_[i] == BoardContent::empty) return;
     }
 
-    return Winner::tie;
+    winner_ = Winner::tie;
 }
 
 void populate_colors(std::vector<GLfloat>& vertex_colors,

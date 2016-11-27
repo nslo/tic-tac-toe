@@ -30,13 +30,13 @@ int main()
         // glfwPollEvents();
         glfwWaitEvents();
 
-        Game::Winner winner = game.CheckWinner();
+        Game::Winner winner = game.GetWinner();
 
-        if (winner == Game::Winner::player1) {
-            std::cout << "Player 1 wins!" << std::endl;
+        if (winner == Game::Winner::X) {
+            std::cout << "X wins!" << std::endl;
             break;
-        } else if (winner == Game::Winner::player2) {
-            std::cout << "Player 2 wins!" << std::endl;
+        } else if (winner == Game::Winner::O) {
+            std::cout << "O wins!" << std::endl;
             break;
         } else if (winner == Game::Winner::tie) {
             std::cout << "It's a tie" << std::endl;

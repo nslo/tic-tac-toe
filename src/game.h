@@ -53,15 +53,16 @@ public:
     static size_t GetSquareFromCursor(size_t window_width, size_t window_height,
                                       double x, double y);
 
-    enum class Winner { none, tie, player1, player2 };
+    // Reuse Winner for turn
+    enum class Winner { none, tie, X, O };
     enum class BoardContent { empty, X, O };
 
     Game(size_t window_width, size_t window_height);
     bool ValidSquare(size_t square);
     void AddO(size_t square);
     void AddX(size_t square);
-    Winner CheckWinner();
     void NextTurn();
+    Winner GetWinner();
 
     const std::vector<BoardContent>& Board() const
     {
@@ -81,12 +82,14 @@ public:
     virtual const GLuint& VBO() const override;
 
 private:
+    void CheckWinner();
     void GetSquareCenter(size_t square, size_t& x, size_t& y);
 
     const size_t window_width_;
     const size_t window_height_;
     class Grid grid_;
-    int player_2_turn_;
+    Winner turn_;
+    Winner winner_;
     std::vector<BoardContent> board_;
 
     std::vector<GLfloat> vertex_positions_;
