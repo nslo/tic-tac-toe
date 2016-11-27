@@ -4,8 +4,21 @@
 #include "color.h"
 #include "game.h"
 
-GLCoord Game::screen_to_gl(const ScreenCoord& screen, size_t window_width,
-                           size_t window_height)
+Game::Game(size_t window_width, size_t window_height)
+    : window_width_(window_width)
+    , window_height_(window_height)
+    , grid_(window_width_, window_height_, window_width / 3, window_height / 3,
+            color::LightGrey)
+    , player_2_turn_(0)
+{
+    board_.reserve(8);
+    for (auto& square : board_) square = Game::BoardContent::empty;
+
+    glGenBuffers(1, &vbo_);
+}
+
+GLCoord Game::ScreenToGL(const ScreenCoord& screen, size_t window_width,
+                         size_t window_height)
 {
     // 2 comes from OpenGL coordinate range going from -1.0 to 1.0
     return GLCoord{static_cast<GLfloat>(screen.x) /
@@ -17,9 +30,8 @@ GLCoord Game::screen_to_gl(const ScreenCoord& screen, size_t window_width,
 }
 
 // returns 0-8, numbered from bottom left in reading order
-size_t Game::get_square_from_cursor_pos(size_t window_width,
-                                        size_t window_height, double x,
-                                        double y)
+size_t Game::GetSquareFromCursor(size_t window_width, size_t window_height,
+                                 double x, double y)
 {
     // Tried to get a neat formula for this but was bothered by edge cases.
     size_t index = 0;
@@ -35,16 +47,36 @@ size_t Game::get_square_from_cursor_pos(size_t window_width,
     return index;
 }
 
-Game::Game(size_t window_width, size_t window_height)
-    : window_width_(window_width)
-    , window_height_(window_height)
-    , grid_(window_width_, window_height_, window_width / 3, window_height / 3,
-            color::LightGrey)
+// Handle mouse events
+void Game::CursorPositionCallback(GLFWwindow* /*window*/, double /*xpos*/,
+                                  double /*ypos*/)
 {
-    board_.reserve(8);
-    for (auto& square : board_) square = Game::BoardContent::empty;
+    // TODO: highlight squares on mouseover
+}
 
-    glGenBuffers(1, &vbo_);
+void Game::MouseButtonCallback(GLFWwindow* window, int button, int action,
+                               int /*mods*/)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+        // not sure if I can trust glfw to not report clicks outside window
+        if (x >= window_width_ || x < 0 || y >= window_height_ || y < 0) return;
+        size_t square =
+            Game::GetSquareFromCursor(window_width_, window_height_, x, y);
+        if (!ValidSquare(square)) return;
+
+        if (player_2_turn_) {
+            AddO(square);
+        } else {
+            AddX(square);
+        }
+    }
+}
+
+void Game::NextTurn()
+{
+    player_2_turn_ = (player_2_turn_ + 1) % 2;
 }
 
 bool Game::ValidSquare(size_t square)
@@ -111,7 +143,7 @@ Grid::Grid(size_t width, size_t height, size_t cell_width, size_t cell_height,
     , cell_height_(cell_height)
 {
     auto get_grid_edges = [this](const ScreenCoord& screen) -> void {
-        GLCoord gl = Game::screen_to_gl(screen, window_width_, window_height_);
+        GLCoord gl = Game::ScreenToGL(screen, window_width_, window_height_);
         vertex_positions_.push_back(gl.x);
         vertex_positions_.push_back(gl.y);
     };

@@ -20,38 +20,13 @@ int main()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
+    // Point glfw to the main game object for callbacks
     Game game(window_width, window_height);
-
-    int player_2_turn = 0;
+    glfwSetWindowUserPointer(window, &game);
 
     // Main loop.
     while (!glfwWindowShouldClose(window)) {
-        glfwWaitEvents();
-        // glfwPollEvents();
-
-        // Check if the left button was just released
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) ==
-            GLFW_RELEASE) {
-            double x, y;
-            glfwGetCursorPos(window, &x, &y);
-            // not sure if I can trust glfw to not report clicks outside window
-            if (x >= window_width || x < 0 || y >= window_height || y < 0)
-                continue;
-            size_t square = Game::get_square_from_cursor_pos(
-                window_width, window_height, x, y);
-            if (!game.ValidSquare(square)) continue;
-
-            if (player_2_turn) {
-                game.AddO(square);
-            } else {
-                game.AddX(square);
-            }
-
-        } else {
-            // All these continues are gross
-            continue;
-        }
-
+        glfwPollEvents();
         display(window, game, shader);
 
         Game::Winner winner = game.CheckWinner();
@@ -66,8 +41,8 @@ int main()
             std::cout << "It's a tie" << std::endl;
             break;
         }
-        // else game not over yet
-        player_2_turn = (player_2_turn + 1) % 2;
+
+        game.NextTurn();
     }
 
     // TODO wait for a mouse or keyboard event here?

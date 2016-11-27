@@ -2,7 +2,6 @@
 
 #include <cstddef>
 #include <vector>
-//#include "GL/gl.h"
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include "coord.h"
@@ -47,13 +46,12 @@ private:
 class Game final : public Object
 {
 public:
-    static GLCoord screen_to_gl(const ScreenCoord& screen, size_t window_width,
-                                size_t window_height);
+    static GLCoord ScreenToGL(const ScreenCoord& screen, size_t window_width,
+                              size_t window_height);
 
     // returns 0-8, numbered from top left in reading order
-    static size_t get_square_from_cursor_pos(size_t window_width,
-                                             size_t window_height, double x,
-                                             double y);
+    static size_t GetSquareFromCursor(size_t window_width, size_t window_height,
+                                      double x, double y);
 
     enum class Winner { none, tie, player1, player2 };
     enum class BoardContent { empty, X, O };
@@ -62,7 +60,9 @@ public:
     bool ValidSquare(size_t square);
     void AddO(size_t square);
     void AddX(size_t square);
-    Game::Winner CheckWinner();
+    Winner CheckWinner();
+    void NextTurn();
+
     const std::vector<BoardContent>& Board() const
     {
         return board_;
@@ -72,6 +72,10 @@ public:
         return grid_;
     };
 
+    void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+    void MouseButtonCallback(GLFWwindow* window, int button, int action,
+                             int mods);
+
     virtual const std::vector<GLfloat>& VertexPositions() const override;
     virtual const std::vector<GLfloat>& VertexColors() const override;
     virtual const GLuint& VBO() const override;
@@ -80,6 +84,7 @@ private:
     const size_t window_width_;
     const size_t window_height_;
     class Grid grid_;
+    int player_2_turn_;
     std::vector<BoardContent> board_;
 
     std::vector<GLfloat> vertex_positions_;

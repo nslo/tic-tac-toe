@@ -18,20 +18,17 @@ static void key_callback(GLFWwindow *window, int key, int /*scancode*/,
     }
 }
 
-// Handle mouse events
-static void cursor_position_callback(GLFWwindow * /*window*/, double /*xpos*/,
-                                     double /*ypos*/)
+static void cursor_position_callback(GLFWwindow *window, double xpos,
+                                     double ypos)
 {
-    // TODO: highlight squares on mouseover
+    Game *game = reinterpret_cast<Game *>(glfwGetWindowUserPointer(window));
+    game->CursorPositionCallback(window, xpos, ypos);
 }
-
-// TODO remove this?
-void mouse_button_callback(GLFWwindow * /*window*/, int button, int action,
-                           int /*mods*/)
+static void mouse_button_callback(GLFWwindow *window, int button, int action,
+                                  int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-        // TODO: mark square
-    }
+    Game *game = reinterpret_cast<Game *>(glfwGetWindowUserPointer(window));
+    game->MouseButtonCallback(window, button, action, mods);
 }
 
 GLFWwindow *initialize_glfw(size_t window_width, size_t window_height)
@@ -50,9 +47,11 @@ GLFWwindow *initialize_glfw(size_t window_width, size_t window_height)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-    // GLFWwindow *window = glfwCreateWindow(static_cast<int>(window_width),
-    //                                      static_cast<int>(window_height),
-    GLFWwindow *window = glfwCreateWindow(100, 100, "Float", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(static_cast<int>(window_width),
+                                          static_cast<int>(window_height),
+                                          "Float",
+                                          nullptr,
+                                          nullptr);
     if (!window) {
         printf("Failed to open a window.\n");
         glfwTerminate();
