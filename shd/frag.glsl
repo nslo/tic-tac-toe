@@ -1,4 +1,4 @@
-#version 140
+#version 450
 
 in vec4 color_from_vshader;
 out vec4 out_color;

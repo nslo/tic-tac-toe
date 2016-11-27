@@ -13,8 +13,7 @@ int main()
     initialize_glew();
 
     // read, load, compile the shaders
-    GLuint shader =
-        create_shader_program("../shd/vert.glsl", "../shd/frag.glsl");
+    GLuint shader = create_shader_program("./shd/vert.glsl", "./shd/frag.glsl");
 
     // Use a Vertex Array Object.
     GLuint vao;

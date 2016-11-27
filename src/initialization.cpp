@@ -44,18 +44,15 @@ GLFWwindow *initialize_glfw(size_t window_width, size_t window_height)
         std::exit(EXIT_FAILURE);
     }
 
-    // Use OpenGL 3.1 core profile.  When using an OpenGL version lower than
-    // 3.2, ANY rather than CORE must be used.
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+    // Use OpenGL core profile.
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-    GLFWwindow *window = glfwCreateWindow(static_cast<int>(window_width),
-                                          static_cast<int>(window_height),
-                                          "Float",
-                                          nullptr,
-                                          nullptr);
+    // GLFWwindow *window = glfwCreateWindow(static_cast<int>(window_width),
+    //                                      static_cast<int>(window_height),
+    GLFWwindow *window = glfwCreateWindow(100, 100, "Float", nullptr, nullptr);
     if (!window) {
         printf("Failed to open a window.\n");
         glfwTerminate();
