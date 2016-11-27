@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <random>
 #include <unordered_map>
@@ -10,10 +11,8 @@ Game::Game(size_t window_width, size_t window_height)
     , grid_(window_width_, window_height_, window_width / 3, window_height / 3,
             color::LightGrey)
     , player_2_turn_(0)
+    , board_(8, BoardContent::empty)
 {
-    board_.reserve(8);
-    for (auto& square : board_) square = Game::BoardContent::empty;
-
     glGenBuffers(1, &vbo_);
 }
 
@@ -24,12 +23,12 @@ GLCoord Game::ScreenToGL(const ScreenCoord& screen, size_t window_width,
     return GLCoord{static_cast<GLfloat>(screen.x) /
                            static_cast<GLfloat>(window_width / 2) -
                        1,
-                   static_cast<GLfloat>(screen.y) /
-                           static_cast<GLfloat>(window_height / 2) -
-                       1};
+                   -1 * (static_cast<GLfloat>(screen.y) /
+                             static_cast<GLfloat>(window_height / 2) -
+                         1)};
 }
 
-// returns 0-8, numbered from bottom left in reading order
+// returns 0-8, numbered from top left in reading order
 size_t Game::GetSquareFromCursor(size_t window_width, size_t window_height,
                                  double x, double y)
 {
@@ -44,6 +43,9 @@ size_t Game::GetSquareFromCursor(size_t window_width, size_t window_height,
     if (y >= h && y < 2 * h) index += 3;
     if (y >= 2 * h && y < window_height) index += 6;
 
+    // TODO REMOVE
+    std::cout << x << " " << y << " " << window_width << " " << window_height
+              << " " << index << std::endl;
     return index;
 }
 
@@ -90,15 +92,56 @@ bool Game::ValidSquare(size_t square)
 void Game::AddO(size_t square)
 {
     board_[square] = Game::BoardContent::O;
-    // TODO: calculate the positions and add them to vertex_positions_
-    populate_colors(vertex_colors_, color::White, vertex_positions_.size() / 2);
+
+    size_t cx, cy;
+    GetSquareCenter(square, cx, cy);
+
+    // Number of segments is arbitrary, but make sure it's even.
+    // Radius is 35% of the smaller dimension.
+    size_t segments = 1000;
+    double r = 0.35 * (window_width_ > window_height_ ? window_height_ / 3
+                                                      : window_width_ / 3);
+    for (size_t i = 0; i < segments; i++) {
+        double theta = 2.0f * 3.14159 * i / segments; // current angle
+        ScreenCoord coord(static_cast<size_t>(cx + r * std::cos(theta)),
+                          static_cast<size_t>(cy + r * std::sin(theta)));
+        GLCoord gl = Game::ScreenToGL(coord, window_width_, window_height_);
+        vertex_positions_.push_back(gl.x);
+        vertex_positions_.push_back(gl.y);
+    }
+
+    populate_colors(vertex_colors_, color::White, segments / 2);
 }
 
 void Game::AddX(size_t square)
 {
     board_[square] = Game::BoardContent::X;
-    // TODO: calculate the positions and add them to vertex_positions_
-    populate_colors(vertex_colors_, color::White, vertex_positions_.size() / 2);
+
+    // TODO calculate the center
+    size_t cx, cy;
+    GetSquareCenter(square, cx, cy);
+
+    double r = 0.35 * (window_width_ > window_height_ ? window_height_ / 3
+                                                      : window_width_ / 3);
+
+    auto add_coord = [this](size_t x, size_t y) -> void {
+        ScreenCoord coord(x, y);
+        GLCoord gl = Game::ScreenToGL(coord, window_width_, window_height_);
+        vertex_positions_.push_back(gl.x);
+        vertex_positions_.push_back(gl.y);
+    };
+    add_coord(cx + static_cast<size_t>(r), cy + static_cast<size_t>(r));
+    add_coord(cx - static_cast<size_t>(r), cy - static_cast<size_t>(r));
+    add_coord(cx + static_cast<size_t>(r), cy - static_cast<size_t>(r));
+    add_coord(cx - static_cast<size_t>(r), cy + static_cast<size_t>(r));
+
+    populate_colors(vertex_colors_, color::White, 2);
+}
+
+void Game::GetSquareCenter(size_t square, size_t& x, size_t& y)
+{
+    x = ((square % 3) * 2 + 1) * (window_width_ / 6);
+    y = ((square / 3) * 2 + 1) * (window_height_ / 6);
 }
 
 Game::Winner Game::CheckWinner()

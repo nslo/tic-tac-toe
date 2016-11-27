@@ -6,7 +6,7 @@
 #include "GLFW/glfw3.h"
 #include "coord.h"
 
-// Screen coordinates start at (0, 0) at bottom left of screen.
+// Screen coordinates start at (0, 0) at top left of screen.
 // OpenGL coordinates range from (-1.0, -1.0) to (1.0, 1.0).
 using ScreenCoord = Coord<size_t>; // A pixel position on screen.
 using GLCoord = Coord<GLfloat>;
@@ -81,6 +81,8 @@ public:
     virtual const GLuint& VBO() const override;
 
 private:
+    void GetSquareCenter(size_t square, size_t& x, size_t& y);
+
     const size_t window_width_;
     const size_t window_height_;
     class Grid grid_;
