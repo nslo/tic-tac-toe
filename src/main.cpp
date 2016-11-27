@@ -26,8 +26,9 @@ int main()
 
     // Main loop.
     while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
         display(window, game, shader);
+        // glfwPollEvents();
+        glfwWaitEvents();
 
         Game::Winner winner = game.CheckWinner();
 
@@ -41,8 +42,6 @@ int main()
             std::cout << "It's a tie" << std::endl;
             break;
         }
-
-        game.NextTurn();
     }
 
     // TODO wait for a mouse or keyboard event here?

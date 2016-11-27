@@ -43,9 +43,6 @@ size_t Game::GetSquareFromCursor(size_t window_width, size_t window_height,
     if (y >= h && y < 2 * h) index += 3;
     if (y >= 2 * h && y < window_height) index += 6;
 
-    // TODO REMOVE
-    std::cout << x << " " << y << " " << window_width << " " << window_height
-              << " " << index << std::endl;
     return index;
 }
 
@@ -73,6 +70,8 @@ void Game::MouseButtonCallback(GLFWwindow* window, int button, int action,
         } else {
             AddX(square);
         }
+
+        NextTurn();
     }
 }
 
@@ -117,7 +116,6 @@ void Game::AddX(size_t square)
 {
     board_[square] = Game::BoardContent::X;
 
-    // TODO calculate the center
     size_t cx, cy;
     GetSquareCenter(square, cx, cy);
 
@@ -146,11 +144,42 @@ void Game::GetSquareCenter(size_t square, size_t& x, size_t& y)
 
 Game::Winner Game::CheckWinner()
 {
-    for (size_t x = 0; x <= 8; ++x) {
+    // Can't think of an elegant way to do this.  Feels bad man.
+    // When men were men you could use a goto here.
+    bool winner = false;
+    if ((board_[0] == board_[1] && board_[1] == board_[2] &&
+         board_[0] != BoardContent::empty) ||
+        (board_[3] == board_[4] && board_[4] == board_[5] &&
+         board_[3] != BoardContent::empty) ||
+        (board_[6] == board_[7] && board_[7] == board_[8] &&
+         board_[6] != BoardContent::empty) ||
+        (board_[0] == board_[3] && board_[3] == board_[6] &&
+         board_[0] != BoardContent::empty) ||
+        (board_[1] == board_[4] && board_[4] == board_[7] &&
+         board_[1] != BoardContent::empty) ||
+        (board_[2] == board_[5] && board_[5] == board_[8] &&
+         board_[2] != BoardContent::empty) ||
+        (board_[0] == board_[4] && board_[4] == board_[8] &&
+         board_[0] != BoardContent::empty) ||
+        (board_[2] == board_[4] && board_[4] == board_[6] &&
+         board_[2] != BoardContent::empty)) {
+        winner = true;
     }
-    // TODO
 
-    return Winner::none;
+    if (winner) {
+        // Whoever's turn it just was is the winning player.
+        if (player_2_turn_)
+            return Winner::player2;
+        else
+            return Winner::player1;
+    }
+
+    // Check if there are still moves to make.
+    for (size_t i = 0; i <= 8; ++i) {
+        if (board_[i] == BoardContent::empty) return Winner::none;
+    }
+
+    return Winner::tie;
 }
 
 void populate_colors(std::vector<GLfloat>& vertex_colors,
