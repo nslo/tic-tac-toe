@@ -22,11 +22,14 @@ main
 *.swo
 *.un~
 
-#YouCompleteMe
+# YouCompleteMe
 .ycm_extra_conf.pyc
 
-#CMake
+# CMake
 CMakeCache.txt
 CMakeFiles
 Makefile
 cmake_install.cmake
+
+# This executable
+tic-tac-toe

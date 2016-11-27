@@ -30,8 +30,8 @@ add_definitions(-std=c++11 -g)
 add_executable(tic-tac-toe ${source} ${includes})
 
 target_link_libraries(tic-tac-toe
-    #GLEW
-    glfw3
+    GLEW
+    glfw
     GL
     X11
     Xi

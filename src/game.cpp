@@ -16,12 +16,23 @@ GLCoord Game::screen_to_gl(const ScreenCoord& screen, size_t window_width,
                        1};
 }
 
-// returns 0-8, numbered from top left in reading order
+// returns 0-8, numbered from bottom left in reading order
 size_t Game::get_square_from_cursor_pos(size_t window_width,
                                         size_t window_height, double x,
                                         double y)
 {
-    // TODO
+    // Tried to get a neat formula for this but was bothered by edge cases.
+    size_t index = 0;
+    size_t w = window_width / 3;
+    size_t h = window_height / 3;
+    if (x >= 0 && x < w) index += 0; // for completeness
+    if (x >= w && x < 2 * w) index += 1;
+    if (x >= 2 * w && x < window_width) index += 2;
+    if (y >= 0 && y < h) index += 0; // for completeness
+    if (y >= h && y < 2 * h) index += 3;
+    if (y >= 2 * h && y < window_height) index += 6;
+
+    return index;
 }
 
 Game::Game(size_t window_width, size_t window_height)
@@ -60,7 +71,11 @@ void Game::AddX(size_t square)
 
 Game::Winner Game::CheckWinner()
 {
+    for (size_t x = 0; x <= 8; ++x) {
+    }
     // TODO
+
+    return Winner::none;
 }
 
 void populate_colors(std::vector<GLfloat>& vertex_colors,

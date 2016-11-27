@@ -19,8 +19,8 @@ static void key_callback(GLFWwindow *window, int key, int /*scancode*/,
 }
 
 // Handle mouse events
-static void cursor_position_callback(GLFWwindow *window, double xpos,
-                                     double ypos)
+static void cursor_position_callback(GLFWwindow * /*window*/, double /*xpos*/,
+                                     double /*ypos*/)
 {
     // TODO: highlight squares on mouseover
 }
