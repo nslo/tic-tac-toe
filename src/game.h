@@ -73,10 +73,6 @@ public:
     void NextTurn();
     Winner GetWinner();
 
-    const std::vector<BoardContent>& Board() const
-    {
-        return board_;
-    };
     const Grid& Grid() const
     {
         return grid_;
