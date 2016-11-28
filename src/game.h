@@ -14,9 +14,23 @@ using GLCoord = Coord<GLfloat>;
 class Object
 {
 public:
-    virtual const std::vector<GLfloat>& VertexPositions() const = 0;
-    virtual const std::vector<GLfloat>& VertexColors() const = 0;
-    virtual const GLuint& VBO() const = 0;
+    const std::vector<GLfloat>& VertexPositions() const
+    {
+        return vertex_positions_;
+    }
+    const std::vector<GLfloat>& VertexColors() const
+    {
+        return vertex_colors_;
+    }
+    const GLuint& VBO() const
+    {
+        return vbo_;
+    }
+
+protected:
+    std::vector<GLfloat> vertex_positions_;
+    std::vector<GLfloat> vertex_colors_;
+    GLuint vbo_;
 };
 
 class Grid final : public Object
@@ -24,14 +38,8 @@ class Grid final : public Object
 public:
     Grid(size_t width, size_t height, size_t cell_width, size_t cell_height,
          const std::vector<GLfloat>& color);
-    virtual const std::vector<GLfloat>& VertexPositions() const override;
-    virtual const std::vector<GLfloat>& VertexColors() const override;
-    virtual const GLuint& VBO() const override;
 
 private:
-    std::vector<GLfloat> vertex_positions_;
-    std::vector<GLfloat> vertex_colors_;
-    GLuint vbo_;
     size_t window_width_;
     size_t window_height_;
     size_t cell_width_;
@@ -78,10 +86,6 @@ public:
     void MouseButtonCallback(GLFWwindow* window, int button, int action,
                              int mods);
 
-    virtual const std::vector<GLfloat>& VertexPositions() const override;
-    virtual const std::vector<GLfloat>& VertexColors() const override;
-    virtual const GLuint& VBO() const override;
-
 private:
     void CheckWinner();
     void GetSquareCenter(size_t square, size_t& x, size_t& y);
@@ -92,9 +96,4 @@ private:
     Winner turn_;
     Winner winner_;
     std::vector<BoardContent> board_;
-
-    std::vector<GLfloat> vertex_positions_;
-    std::vector<GLfloat> vertex_colors_;
-
-    GLuint vbo_;
 };

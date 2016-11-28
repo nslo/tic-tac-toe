@@ -17,8 +17,8 @@ void display(GLFWwindow* window, const Game& game, const GLuint& shader)
 }
 
 // TODO can everything up to bind_shader go in constructor?
-void draw(const Object& object, const GLuint& shader, GLenum draw_mode,
-          GLenum usage)
+template <typename T>
+void draw(const T& object, const GLuint& shader, GLenum draw_mode, GLenum usage)
 {
     //// Indices into vbo.
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object.IBO());
@@ -62,7 +62,8 @@ void draw(const Object& object, const GLuint& shader, GLenum draw_mode,
     //                nullptr);
 }
 
-void bind_shader(const Object& object, const GLuint& shader)
+template <typename T>
+void bind_shader(const T& object, const GLuint& shader)
 {
     // Get locations of position and color attributes in shaders; specify /
     // enable.

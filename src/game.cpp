@@ -203,19 +203,6 @@ void Game::populate_colors(std::vector<GLfloat>& vertex_colors,
     }
 }
 
-const std::vector<GLfloat>& Game::VertexPositions() const
-{
-    return vertex_positions_;
-}
-const std::vector<GLfloat>& Game::VertexColors() const
-{
-    return vertex_colors_;
-}
-const GLuint& Game::VBO() const
-{
-    return vbo_;
-}
-
 Grid::Grid(size_t width, size_t height, size_t cell_width, size_t cell_height,
            const std::vector<GLfloat>& color)
     : window_width_(width)
@@ -243,17 +230,4 @@ Grid::Grid(size_t width, size_t height, size_t cell_width, size_t cell_height,
     Game::populate_colors(vertex_colors_, color, vertex_positions_.size() / 2);
 
     glGenBuffers(1, &vbo_);
-}
-
-const std::vector<GLfloat>& Grid::VertexPositions() const
-{
-    return vertex_positions_;
-}
-const std::vector<GLfloat>& Grid::VertexColors() const
-{
-    return vertex_colors_;
-}
-const GLuint& Grid::VBO() const
-{
-    return vbo_;
 }

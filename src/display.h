@@ -7,6 +7,8 @@
 #include "game.h"
 
 void display(GLFWwindow* window, const Game& game, const GLuint& shader);
-void draw(const Object& object, const GLuint& shader, GLenum draw_mode,
+template <typename T>
+void draw(const T& object, const GLuint& shader, GLenum draw_mode,
           GLenum usage);
-void bind_shader(const Object& object, const GLuint& shader);
+template <typename T>
+void bind_shader(const T& object, const GLuint& shader);
