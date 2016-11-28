@@ -19,9 +19,6 @@ public:
     virtual const GLuint& VBO() const = 0;
 };
 
-void populate_colors(std::vector<GLfloat>& vertex_colors,
-                     const std::vector<GLfloat>& colors, size_t num_vertices);
-
 class Grid final : public Object
 {
 public:
@@ -46,6 +43,10 @@ private:
 class Game final : public Object
 {
 public:
+    static void populate_colors(std::vector<GLfloat>& vertex_colors,
+                                const std::vector<GLfloat>& colors,
+                                size_t num_vertices);
+
     static GLCoord ScreenToGL(const ScreenCoord& screen, size_t window_width,
                               size_t window_height);
 

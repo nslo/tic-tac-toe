@@ -190,8 +190,9 @@ void Game::CheckWinner()
     winner_ = Winner::tie;
 }
 
-void populate_colors(std::vector<GLfloat>& vertex_colors,
-                     const std::vector<GLfloat>& colors, size_t num_vertices)
+void Game::populate_colors(std::vector<GLfloat>& vertex_colors,
+                           const std::vector<GLfloat>& colors,
+                           size_t num_vertices)
 {
     // For every vertex (two elements of position vector) push all three color
     // elements. i.e. one RGB color per vertex.
@@ -239,7 +240,7 @@ Grid::Grid(size_t width, size_t height, size_t cell_width, size_t cell_height,
         get_grid_edges(ScreenCoord(window_width_, y));
     }
 
-    populate_colors(vertex_colors_, color, vertex_positions_.size() / 2);
+    Game::populate_colors(vertex_colors_, color, vertex_positions_.size() / 2);
 
     glGenBuffers(1, &vbo_);
 }
